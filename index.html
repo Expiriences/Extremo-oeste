@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EXTREMO OESTE</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <link rel="stylesheet" href="style.css">
+
+</head>
+<!-- ==========================================
+     EXPERIENCES BOT — paste before </body>
+     ========================================== -->
+
+<!-- Chat Button -->
+<button class="bot-toggle" id="bot-toggle" onclick="toggleChat()">
+  💬
+</button>
+
+<!-- Chat Widget -->
+<div class="bot-widget" id="bot-widget">
+
+  <div class="bot-header">
+    <div class="bot-header-info">
+      <span class="bot-avatar">🗺</span>
+      <div>
+        <strong>Experiences Bot</strong>
+        <small>Extremo Oeste · Lima</small>
+      </div>
+    </div>
+    <button class="bot-close" onclick="toggleChat()">×</button>
+  </div>
+
+  <div class="bot-messages" id="bot-messages"></div>
+
+  <div class="bot-input-area">
+    <input
+      id="bot-input"
+      type="text"
+      placeholder="Ask about our experiences..."
+      onkeydown="if(event.key==='Enter') botSend()"
+    >
+    <button onclick="botSend()">→</button>
+  </div>
+
+</div>
+
+<!-- WhatsApp CTA (shown on hot lead) -->
+<div class="bot-whatsapp-cta" id="bot-whatsapp-cta" style="display:none">
+  <a href="https://wa.me/51999156493?text=Hi,%20I%20would%20like%20to%20book%20an%20experience%20with%20Extremo%20Oeste"
+     target="_blank">
+    📲 Book now via WhatsApp
+  </a>
+</div>
+
+<style>
+
+.bot-toggle {
+  position: fixed;
+  bottom: 100px;
+  right: 25px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #f44061;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  z-index: 9998;
+  transition: .3s;
+}
+
+.bot-toggle:hover {
+  transform: scale(1.1);
+  background: #ef2a86;
+}
+
+.bot-widget {
+  position: fixed;
+  bottom: 170px;
+  right: 25px;
+  width: 360px;
+  height: 500px;
+  background: #1E1F22;
+  border-radius: 16px;
+  display: none;
+  flex-direction: column;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  z-index: 9997;
+  border: 1px solid rgba(194,168,120,0.2);
+  overflow: hidden;
+}
+
+.bot-widget.open {
+  display: flex;
+}
+
+.bot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #B35C3A;
+  color: white;
+}
+
+.bot-header-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bot-avatar {
+  font-size: 1.5rem;
+}
+
+.bot-header strong {
+  display: block;
+  font-size: .95rem;
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 1px;
+}
+
+.bot-header small {
+  font-size: .75rem;
+  opacity: .85;
+}
+
+.bot-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.bot-messages {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bot-msg {
+  max-width: 82%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: .88rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.bot-msg.bot {
+  background: #2a2b2f;
+  color: #EDE8E1;
+  align-self: flex-start;
+}
+
+.bot-msg.user {
+  background: #B35C3A;
+  color: white;
+  align-self: flex-end;
+}
+
+.bot-msg.typing {
+  background: #2a2b2f;
+  color: #888;
+  font-style: italic;
+  align-self: flex-start;
+}
+
+.bot-input-area {
+  display: flex;
+  padding: 12px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  gap: 8px;
+}
+
+.bot-input-area input {
+  flex: 1;
+  background: #2a2b2f;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #EDE8E1;
+  font-size: .9rem;
+  outline: none;
+}
+
+.bot-input-area input::placeholder {
+  color: #666;
+}
+
+.bot-input-area button {
+  background: #C2A878;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  color: #0F0F10;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.bot-input-area button:hover {
+  background: #d4bc90;
+}
+
+.bot-whatsapp-cta {
+  position: fixed;
+  bottom: 170px;
+  right: 400px;
+  z-index: 9999;
+}
+
+.bot-whatsapp-cta a {
+  display: block;
+  background: #25D366;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: .9rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+@media (max-width: 480px) {
+  .bot-widget {
+    width: calc(100vw - 30px);
+    right: 15px;
+    bottom: 150px;
+  }
+  .bot-whatsapp-cta {
+    right: 15px;
+    bottom: 670px;
+  }
+}
+
+</style>
+
+<script>
+
+const WORKER_URL = "https://experience-ai.limaexpiriences.workers.dev/";
+
+let botConversation = [];
+let chatOpen = false;
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  const widget = document.getElementById('bot-widget');
+  widget.classList.toggle('open', chatOpen);
+
+  if (chatOpen && botConversation.length === 0) {
+    setTimeout(() => {
+      addBotMessage("Hi! I'm the Experiences Bot 🗺\n\nI can help you discover Lima through the eyes of a local. Which type of experience interests you — history, gastronomy, nature, or something custom?");
+    }, 400);
+  }
+}
+
+function addBotMessage(text) {
+  const div = document.createElement('div');
+  div.className = 'bot-msg bot';
+  div.textContent = text;
+  document.getElementById('bot-messages').appendChild(div);
+  scrollBot();
+}
+
+function addUserMessage(text) {
+  const div = document.createElement('div');
+  div.className = 'bot-msg user';
+  div.textContent = text;
+  document.getElementById('bot-messages').appendChild(div);
+  scrollBot();
+}
+
+function addTyping() {
+  const div = document.createElement('div');
+  div.className = 'bot-msg typing';
+  div.id = 'bot-typing';
+  div.textContent = 'Writing...';
+  document.getElementById('bot-messages').appendChild(div);
+  scrollBot();
+}
+
+function scrollBot() {
+  const msgs = document.getElementById('bot-messages');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+async function botSend() {
+  const input = document.getElementById('bot-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  addUserMessage(text);
+  botConversation.push({ role: "user", content: text });
+  input.value = "";
+
+  addTyping();
+
+  try {
+    const response = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: botConversation })
+    });
+
+    const data = await response.json();
+
+    document.getElementById('bot-typing')?.remove();
+
+    let reply = data.reply;
+    const isHotLead = data.isHotLead;
+
+    // Remove WhatsApp CTA tag from visible message
+    const showWhatsApp = reply.includes('[WHATSAPP_CTA]');
+    reply = reply.replace('[WHATSAPP_CTA]', '').trim();
+
+    botConversation.push({ role: "assistant", content: reply });
+    addBotMessage(reply);
+
+    // Show WhatsApp CTA button if hot lead or bot triggered it
+    if (showWhatsApp || isHotLead) {
+      document.getElementById('bot-whatsapp-cta').style.display = 'block';
+    }
+
+  } catch (error) {
+    document.getElementById('bot-typing')?.remove();
+    addBotMessage("Sorry, I'm having trouble connecting. Please contact us directly via WhatsApp.");
+  }
+}
+
+</script>
+
+<body>
+
+  <header class="navbar">
+
+    <div class="logo">
+      <span class="kanji">西尾</span>
+      <span class="logo-text">EXTREMO OESTE</span>
+    </div>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#experiences">Experiences</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+
+    <div class="menu-toggle" id="menu-toggle">☰</div>
+
+  </header>
+
+  <section class="hero" id="hero">
+
+    <div class="hero-content">
+
+      <h1>
+        Trying to make sense of Lima? We can help.
+      </h1>
+
+      <p>
+        Discover this ancient and beautiful city, its traditions, living culture, and everyday life. Understand what shapes the Peruvian people, and through them, gain new insight into Hispanic America.
+        Urban culture, history, nature, and human connection through alternative experiences in Peru.
+      </p>
+
+      <div class="hero-buttons">
+        <a href="#experiences" class="btn-primary">Explore Experiences</a>
+        <a href="#contact" class="btn-secondary">Contact Us</a>
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="intro" id="about">
+
+    <img src="Lima4.jpg" alt="Lima">
+
+    <div>
+
+      <span class="section-tag">ABOUT EXTREMO OESTE</span>
+
+      <h2>
+        Begin your journey into Lima with us.<br>Experience more than tourism, step right into living culture.
+      </h2>
+
+      <p>
+        Lima is the main gateway to Peru. For a long time, it was underrated because of more famous destinations like Cusco or Nazca. Although Lima is considered a modern city, beneath its urban landscape lie over fifteen hundred years of continuous human settlement and city-building.
+        The present-day city is the result of the many cultures and bloodlines that have shaped Peru over thousands of years of human life in this region. Much of this history was made possible by the sea, the great provider of life in the middle of the coastal desert.
+      </p>
+
+      <p>
+        EXTREMO OESTE creates alternative experiences in Lima focused on history, urban life, ecology, and human connection. Our routes are designed for travelers who want to understand Lima beyond tourism.
+      </p>
+
+    </div>
+
+  </section>
+
+  <section id="experiences">
+
+    <div class="section-header">
+      <span class="section-tag">EXPERIENCES</span>
+      <h2>Alternative Cultural Routes</h2>
+    </div>
+
+    <div class="experiences-grid">
+
+      <!-- FILA 1: grande (span 2) + pequeña -->
+      <article class="experience-card large-card">
+        <img src="Limahuacapucllna1.jpg" alt="Huacas de Lima">
+        <div class="card-content">
+          <span class="card-category">HISTORICAL LIMA</span>
+          <h3>Ancient Lima Experience (Huacas of Lima)</h3>
+          <p>Did you know that the city of Lima has more than 400 archaeological sites? Discover Lima as an ancient city through archaeology, urban landscapes, and living history.</p>
+          <div class="card-footer">
+            <span class="card-price">From $76</span>
+            <button class="card-button open-modal"
+              data-title="Ancient Lima Experience (Huacas of Lima)"
+              data-description="Nowadays, the city of Lima stretches across three valleys — Chillón, Rímac, and Lurín — where, at the time of the Spanish arrival, more than 200,000 people lived. Explore Lima's ancient ceremonial centers while understanding the city's evolution from pre-Columbian times to modern urban life."
+              data-itinerary="Hotel pick-up
+Huaca Huallamarca
+Huaca Pucllana
+Huaca Mateo Salado
+Historic Downtown Lima
+San Cristóbal Mountain viewpoint
+Return to the hotel"
+              data-duration="Approximately 6 hours"
+              data-group-size="4 to 8 people"
+              data-includes="Transportation, guide, and entrance tickets"
+              data-price="$76">
+              Explore →
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="experience-card">
+        <img src="ChanfainitaenLima.jpeg" alt="Cook and eat like a local">
+        <div class="card-content">
+          <span class="card-category">GASTRONOMY</span>
+          <h3>Cook and Eat Like a Local</h3>
+          <p>Peruvian cuisine is famous for combining diverse culinary traditions with some of the most delicious ingredients. Taste traditional Lima through local markets, cultural storytelling, and cooking with a local host.</p>
+          <div class="card-footer">
+            <span class="card-price">From $55</span>
+            <button class="card-button open-modal"
+              data-title="Cook and Eat Like a Local"
+              data-description="Peru has a remarkable culinary diversity because of its natural regions and cultural melting pot. Its cuisine is influenced by Spanish, Andean, and coastal traditions, enriched by waves of Italian, Chinese, and Japanese migration. Visit a local market to select fresh ingredients, then prepare a traditional meal while learning about Peruvian history and culture."
+              data-itinerary="Meeting point pick-up
+Visit to a local market
+Cooking workshop
+Return to the meeting point"
+              data-duration="Approximately 3 hours"
+              data-group-size="4 to 8 people"
+              data-includes="Transportation, guide, and ingredients"
+              data-price="$55">
+              Explore →
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- FILA 2: pequeña + grande (span 2) -->
+      <article class="experience-card">
+        <img src="Limabay1.jpeg" alt="Lima Bay">
+        <div class="card-content">
+          <span class="card-category">COASTAL EXPERIENCE</span>
+          <h3>Lima Bay Experience</h3>
+          <p>Did you know that Lima's coastline beaches are mostly man-made? The Peruvian Sea has played a major role in Peruvian history. Explore Lima Bay and discover a hidden side of the city.</p>
+          <div class="card-footer">
+            <span class="card-price">From $60</span>
+            <button class="card-button open-modal"
+              data-title="Lima Bay Experience"
+              data-description="For many years, Lima was built facing away from the sea, mainly because access to the beaches was limited. Yet fishing in this region has been one of the most important economic activities for thousands of years. Explore the bay from Chorrillos to La Punta and discover one of the city's greatest natural treasures."
+              data-itinerary="Meeting point pick-up
+Morro Solar
+Fishing port
+La Punta walking tour
+Italian-Peruvian bakery
+Real Felipe Fortress
+Return to the meeting point"
+              data-duration="Approximately 6 hours"
+              data-group-size="4 to 8 people"
+              data-includes="Transportation, guide, entrance tickets, and a bakery snack"
+              data-price="$60">
+              Explore →
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="experience-card large-card">
+        <img src="Limabiketour1.jpg" alt="Urban Bicycle Ride">
+        <div class="card-content">
+          <span class="card-category">URBAN CULTURE</span>
+          <h3>Urban Bicycle Ride Experience</h3>
+          <p>Lima is a huge, chaotic, and traffic-dense city. Despite appearances, it is also an excellent place for a bike ride — a perfect way to experience the city up close. Choose between two routes: the coastal esplanade or the historic downtown.</p>
+          <div class="card-footer">
+            <span class="card-price">From $26</span>
+            <button class="card-button open-modal"
+              data-title="Urban Bicycle Ride Experience"
+              data-description="Explore Lima's artistic districts through street art, local culture, and hidden spaces on two wheels."
+              data-itinerary="Meeting point pick-up
+— Route 1: Coastal Esplanade —
+Isaac Rabin Park
+Bridge of Peace
+Barranco
+Downtown Miraflores
+Return to meeting point
+— Route 2: Historic Downtown —
+Arequipa Avenue to Downtown Lima
+Plaza San Martín
+Plaza de Armas
+The Walls of Lima
+Return to meeting point"
+              data-duration="Approximately 3 hours"
+              data-group-size="1 to 8 people"
+              data-includes="Guide, entrance ticket, bicycle, and safety gear rental"
+              data-price="From $26">
+              Explore →
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- FILA 3: grande (span 2) + pequeña -->
+      <article class="experience-card large-card">
+        <img src="LimaLomasPantano.png" alt="Sea to Loma">
+        <div class="card-content">
+          <span class="card-category">NATURE & ECOLOGY</span>
+          <h3>From the Sea to the Loma Experience</h3>
+          <p><span class="card-seasonal">⚠ Only available June to August</span></p>
+          <p>The Peruvian coast is home to one of the most productive marine ecosystems in the world. Discover Lima's coastline through cliffs, ocean views, and hidden natural landscapes.</p>
+          <div class="card-footer">
+            <span class="card-price">From $65</span>
+            <button class="card-button open-modal"
+              data-title="From the Sea to the Loma Experience"
+              data-description="Along the Pacific coast of South America lies one of the richest marine ecosystems on Earth, shaping the Peruvian culture for thousands of years. Cold waters carried north from Antarctica by the Humboldt Current alter the coastal climate, reducing rainfall while creating dense fog as the air condenses against the Andes foothills. This phenomenon forms the unique Lomas ecosystem, found only in coastal Peru and northern Chile."
+              data-itinerary="Hotel pick-up
+Morro Solar
+Villa Wetlands
+Pachacámac Lomas
+Return to the meeting point"
+              data-duration="Approximately 6 hours"
+              data-group-size="4 to 8 people"
+              data-includes="Transportation, guide, entrance tickets, and snacks at the Lomas"
+              data-price="$65">
+              Explore →
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="experience-card">
+        <img src="Limamercado1.jpeg" alt="Lima Markets">
+        <div class="card-content">
+          <span class="card-category">URBAN LIFE</span>
+          <h3>Lima Markets Experience</h3>
+          <p>Lima is still Peru's main port city, which explains the enormous trade markets hidden from most foreign visitors. Visit one of Peru's major commercial hubs and learn about its living history.</p>
+          <div class="card-footer">
+            <span class="card-price">From $32</span>
+            <button class="card-button open-modal"
+              data-title="Lima Markets Experience"
+              data-description="Peru has a long tradition of commerce and trade, from the ancient Chincha culture on the coast to the Colla traders of present-day Puno. Lima continues to attract people from all over Peru and the world, creating a vibrant and dynamic trading culture. Choose between Gamarra Market, the Central Market, or Lima Chinatown."
+              data-itinerary="Hotel pick-up
+— Route 1 —
+Gamarra textile and clothing market
+— Route 2 —
+Chinatown tour
+Return to the meeting point"
+              data-duration="Approximately 4 hours"
+              data-group-size="2 to 8 people"
+              data-includes="Transportation, guide, tickets, and local snacks"
+              data-price="$32">
+              Explore →
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- FILA 4: Custom — full width -->
+      <article class="experience-card custom-card">
+        <img src="Lima1.jpg"alt="Custom Experience">
+        <div class="card-content">
+          <span class="card-category">YOUR IDEA</span>
+          <h3>Custom Experience</h3>
+          <p>Do you have an idea, a place you want to explore, or a unique experience you would like to live? In a safe environment and with good company, let's make it happen.</p>
+          <div class="card-footer">
+            <span class="card-price">Contact us</span>
+            <button class="card-button open-modal"
+              data-title="Custom Experience"
+              data-description="I am a biologist who has traveled across Peru and the world for over 20 years, working with wildlife in challenging environments. In my personal life, I was also a graffiti artist and skateboarder, passionate about underground culture, music, and political movements. I have also worked as a specialized guide for documentary filmmakers, naturalists, and scientists. Interested in urban birdwatching? Exploring local islands? Seeing sea lions, fur seals, penguins, or guano birds in their natural habitat? Diving? Or perhaps learning more about Peru's underground culture and contemporary social or political processes? Maybe you simply need a local fixer for your project. Contact me to create a personalized experience just for you — there is much more to discover than I can describe here."
+              data-price="Contact us">
+              Get in touch →
+            </button>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+  </section>
+
+  <section id="gallery">
+
+    <div class="section-header">
+      <span class="section-tag">GALLERY</span>
+      <h2>The Real Lima</h2>
+    </div>
+
+    <div class="gallery-grid">
+      <img src="Limamercado2.jpeg">
+      <img src="Limaeste1.JPG">
+      <img src="bajadadebanos.jpeg">
+      <img src="limasur1.jpg">
+    </div>
+
+  </section>
+
+  <section class="contact" id="contact">
+
+    <span class="section-tag">CONTACT</span>
+
+    <h2>Start Your Experience</h2>
+
+    <p>
+      Contact us to book private experiences and discover Lima from a different perspective.
+    </p>
+
+    <div class="contact-links">
+
+      <a href="https://wa.me/51999156493" target="_blank" class="contact-card">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span>WhatsApp</span>
+      </a>
+
+      <a href="https://instagram.com/extremooe" target="_blank" class="contact-card">
+        <i class="fa-brands fa-instagram"></i>
+        <span>Instagram</span>
+      </a>
+
+      <a href="https://mail.google.com/mail/?view=cm&fs=1&to=LimaExperiences@gmail.com" target="_blank" class="contact-card">
+        <i class="fa-solid fa-envelope"></i>
+        <span>Email</span>
+      </a>
+
+    </div>
+
+    <div class="contact-info">
+      <p>📞 +51 999 156 493</p>
+      <p>📧 LimaExperiences@gmail.com</p>
+    </div>
+
+  </section>
+
+  <footer>
+
+    <div class="logo">
+      <span class="kanji">西尾</span>
+      <span class="logo-text">EXTREMO OESTE</span>
+    </div>
+
+    <p>Alternative Cultural Experiences in Lima, Peru, 2026.</p>
+
+  </footer>
+
+  <div class="modal" id="modal">
+
+    <div class="modal-content">
+
+      <span class="close-modal" id="close-modal">×</span>
+
+      <img id="modal-image" src="" alt="Experience">
+
+      <div class="modal-body">
+
+        <h2 id="modal-title"></h2>
+
+        <p id="modal-description"></p>
+
+        <div class="modal-itinerary" id="modal-itinerary" style="display:none">
+          <h4>Itinerary</h4>
+          <ol id="modal-itinerary-list"></ol>
+        </div>
+
+        <div class="modal-info">
+          <span id="modal-duration"></span>
+          <span id="modal-group-size"></span>
+          <span id="modal-includes"></span>
+          <span id="modal-price"></span>
+        </div>
+
+        <a href="https://wa.me/51999156493?text=Hi,%20I%20would%20like%20to%20book%20an%20experience" target="_blank" class="btn-primary">Book via WhatsApp</a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <a href="https://wa.me/51999156493?text=Hola,%20quiero%20información%20sobre%20los%20tours"
+    class="whatsapp-float"
+    target="_blank">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+  <script>
+
+    // MOBILE MENU
+    const menuToggle = document.getElementById('menu-toggle');
+    const navLinks = document.getElementById('nav-links');
+
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+    });
+
+    // MODAL
+    const modal = document.getElementById('modal');
+    const modalButtons = document.querySelectorAll('.open-modal');
+    const closeModal = document.getElementById('close-modal');
+
+    const modalTitle = document.getElementById('modal-title');
+    const modalImage = document.getElementById('modal-image');
+    const modalDescription = document.getElementById('modal-description');
+    const modalDuration = document.getElementById('modal-duration');
+    const modalPrice = document.getElementById('modal-price');
+
+    const modalGroupSize = document.getElementById('modal-group-size');
+    const modalIncludes = document.getElementById('modal-includes');
+    const modalItinerary = document.getElementById('modal-itinerary');
+    const modalItineraryList = document.getElementById('modal-itinerary-list');
+
+    modalButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        modal.style.display = 'flex';
+        modalTitle.textContent = button.dataset.title;
+
+        // Usa la imagen de la tarjeta directamente
+        const cardImg = button.closest('article').querySelector('img');
+        modalImage.src = cardImg ? cardImg.src : button.dataset.image;
+
+        modalDescription.textContent = button.dataset.description;
+        modalDuration.textContent = '⏱ ' + button.dataset.duration;
+        modalGroupSize.textContent = button.dataset.groupSize ? '👥 ' + button.dataset.groupSize : '';
+        modalIncludes.textContent = button.dataset.includes ? '✓ ' + button.dataset.includes : '';
+        modalPrice.textContent = '💲 ' + button.dataset.price;
+
+        const itinerary = button.dataset.itinerary;
+        if (itinerary && itinerary.trim()) {
+          const stops = itinerary.split('\n').map(s => s.trim()).filter(s => s);
+          modalItineraryList.innerHTML = stops.map(s => `<li>${s}</li>`).join('');
+          modalItinerary.style.display = 'block';
+        } else {
+          modalItinerary.style.display = 'none';
+        }
+      });
+    });
+
+    closeModal.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', (e) => {
+      if(e.target === modal){
+        modal.style.display = 'none';
+      }
+    });
+
+  </script>
+
+</body>
+</html>
