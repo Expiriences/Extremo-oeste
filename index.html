@@ -266,6 +266,10 @@ function toggleChat() {
   const widget = document.getElementById('bot-widget');
   widget.classList.toggle('open', chatOpen);
 
+  if (!chatOpen) {
+    document.getElementById('bot-whatsapp-cta').style.display = 'none';
+  }
+
   if (chatOpen && botConversation.length === 0) {
     setTimeout(() => {
       addBotMessage("Hi! I'm the Experiences Bot 🗺\n\nI can help you discover Lima through the eyes of a local. Which type of experience interests you — history, gastronomy, nature, or something custom?");
