@@ -100,7 +100,7 @@ h1, h2, h3 {
 
 .hero {
   height: 100vh;
-  background: url('Lima3.jpg') center 70%/cover no-repeat;
+  background: url('Lima3.webp') center 70%/cover no-repeat;
   position: relative;
   display: flex;
   align-items: center;
