@@ -418,9 +418,11 @@ h1, h2, h3 {
   justify-content: center;
 }
 
-.contact-card i {
-  font-size: 1.4rem;
+.contact-card .icon-svg {
+  width: 1.4rem;
+  height: 1.4rem;
   color: #C2A878;
+  flex-shrink: 0;
 }
 
 .contact-card:hover {
