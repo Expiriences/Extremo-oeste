@@ -142,7 +142,7 @@ h1, h2, h3 {
 
 .hero {
   height: 90vh;
-  background: url('assets/hero/Lima3.webp') center 70%/cover no-repeat;
+  background: url('assets/hero/Lima3-desktop.webp') center 70%/cover no-repeat;
   position: relative;
   display: flex;
   align-items: center;
@@ -667,6 +667,7 @@ min-height:85svh;
 height:auto;
 padding-top:100px;
 padding-bottom:60px;
+background-image:url('assets/hero/Lima3-mobile.webp');
 }
 
 .hero-content{padding:0;}
