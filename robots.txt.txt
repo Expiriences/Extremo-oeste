@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://expiriences.github.io/Extremo-oeste/sitemap.xml
